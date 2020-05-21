@@ -8,6 +8,7 @@
   margin-top: 20px;
 }
 
+
 .project img {
     height: 300px;
     border-radius: 8px;
@@ -22,4 +23,10 @@
 
 .project-nav {
     text-align: center;
+}
+
+#avatar {
+    width: 200px;
+    margin: 5px;
+    border-radius: 100%;
 }
