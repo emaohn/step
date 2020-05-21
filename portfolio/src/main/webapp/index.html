@@ -8,6 +8,11 @@
   </head>
   <body>
     <div id="content">
+      <h1>My Portfolio</h1>
+      <p>This is my portfolio.</p>
+      <p>Click here to get a random message:</p>
+      <button onclick="addRandomGreeting()">Hello</button>
+      <div id="greeting-container"></div>
         <div>
             <h1>Hi, I'm Emmie</h1>
             <p>Hello! I'm 19 years old and I'm from Boston, MA.</p>
@@ -17,6 +22,10 @@
             <p>Click here to get a random fact about me:</p>
             <button onclick="addRandomFact()">FACT</button>
             <div id="fact-container"></div>
+        </div>
+        <div>
+            <p>This is my dog, Salem</p>
+            <img src='./images/salem.JPG' alt='Salem' width='500'/> 
         </div>
         <div>
             <h2>About</h2>
@@ -129,9 +138,37 @@
             </div>
         </div>
         <div>
-            <p>This is my dog, Salem</p>
-            <img src='./images/salem.JPG' alt='Salem' width='500'/> 
+            <h2>Photography</h2>
+            <p>I started photography when I got my first camera back in 6th grade. What started with me taking random pictures of my dog turned into a huge hobby. I started doing free-lance photography for many small Instagram businesses and exploring other types of photography: street, landscape, macro, etc. </p>
+            <div class="photo-grid">
+                <div class="photo-col">
+                    <img src="./photography/droplets.jpg" />
+                    <img src="./photography/IMG_2145.jpg" />
+                    <img src="./photography/flower1.jpg" />
+                </div>
+                <div class="photo-col">
+                    <img src="./photography/IMG_2146.jpg" />
+                    <img src="./photography/IMG_2147.jpg" />
+                </div>
+                <div class="photo-col">
+                    <img src="./photography/salem3.jpg" />
+                    <img src="./photography/squirrel1.jpg" />
+                    <img src="./photography/wildfire.jpg" />
+                </div>
+            </div>
+            <div>
+                <p>You can check out more of my photography on my <a href="https://www.instagram.com/emmieohn/">Instagram</a> or <a href="https://unsplash.com/@emaohn">Unsplash</a>.</p>
+            </div>
         </div>
+      <div id="contact">
+        <h2>Contact</h2>
+        <p>Have questions or want to work on something together? You can find me here:</p>
+        <a href="https://github.com/emaohn"><img alt="GitHub" src="./media-icons/github.png" /></a>
+        <a href="https://linkedin.com/in/emmieohnuki"><img alt="LinkedIn" src="./media-icons/linkedin.png" /></a>
+        <a href="mailto:emaohn@gmail.com"><img alt="Email" src="./media-icons/email.png" /></a>
+        <a href="https://facebook.com/emmieohnuki"><img alt="Facebook" src="./media-icons/facebook.png" /></a>
+        <a href="https://www.instagram.com/emmieohn/"><img alt="Instagram" src="./media-icons/instagram.png" /></a>
+      </div>
     </div>
   </body>
 </html>
