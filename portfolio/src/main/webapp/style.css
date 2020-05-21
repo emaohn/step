@@ -19,7 +19,7 @@ button {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-#greeting-container {
+#fact-container {
   margin-top: 20px;
 }
 
@@ -33,4 +33,17 @@ button {
 
 #content a {
     color: #69c9ac;
+
+.project img {
+    width: 33%;
+    border-radius: 8px;
+}
+
+.project {
+    padding: 10px 0px;
+
+#avatar {
+    width: 200px;
+    margin: 5px;
+    border-radius: 100%;
 }
