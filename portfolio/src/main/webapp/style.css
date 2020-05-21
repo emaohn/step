@@ -11,6 +11,20 @@
 #contact img{
     width: 50px;
     margin: 5px;
+}
+.photo-grid {
+    width: 100%;
+    display: flex;
+}
+
+.photo-grid img {
+    width: 100%;
+}
+
+.photo-col {
+    flex: 1;
+    margin: 2px;
+}
 
 .project img {
     width: 33%;
@@ -25,3 +39,4 @@
     margin: 5px;
     border-radius: 100%;
 }
+
