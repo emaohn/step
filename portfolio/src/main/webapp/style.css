@@ -55,12 +55,19 @@ button {
 }
 
 .project img {
-    width: 33%;
+    height: 300px;
     border-radius: 8px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .project {
     padding: 10px 0px;
+    text-align: center;
+}
+
+.project-nav {
+    text-align: center;
 }
 
 #avatar {

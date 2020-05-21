@@ -26,3 +26,21 @@ function addRandomFact() {
   const factContainer = document.getElementById('fact-container');
   factContainer.innerText = fact;
 }
+
+/*
+ * Displays next project to the page.
+ */
+
+function toggleProject(direction) {
+    const projects = ["website", "koso", "fetch", "shawa", "cerberus", "auxilia", "keepprivate", "simplyreading", "openwhen", "swole", "impact", "messages", "splitbill"];
+    for (let i = 0; i < projects.length; ++i) {
+        let curProjectDiv = document.getElementById(projects[i]);
+        if (curProjectDiv.style.display === "block") {
+            curProjectDiv.style.display = "none";
+            let nextProjectIndex = i + direction === projects.length ? 0 : (i + direction === -1 ? projects.length - 1 : i + direction);
+            let nextProjectDiv = document.getElementById(projects[nextProjectIndex]);
+            nextProjectDiv.style.display = "block";
+            break;
+        }
+    }
+}
