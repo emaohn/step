@@ -4,6 +4,21 @@
   width: 650px;
 }
 
-#greeting-container {
+#fact-container {
   margin-top: 20px;
+}
+
+
+.project img {
+    width: 33%;
+    border-radius: 8px;
+}
+
+.project {
+    padding: 10px 0px;
+
+#avatar {
+    width: 200px;
+    margin: 5px;
+    border-radius: 100%;
 }
