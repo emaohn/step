@@ -8,3 +8,11 @@
 #greeting-container {
   margin-top: 20px;
 }
+
+#content h1, h2 {
+    color: #d45b5b;
+}
+
+#content p {
+    color: #666666;
+}
