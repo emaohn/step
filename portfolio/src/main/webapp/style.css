@@ -8,6 +8,10 @@
   margin-top: 20px;
 }
 
+#contact img{
+    width: 50px;
+    margin: 5px;
+}
 .photo-grid {
     width: 100%;
     display: flex;
