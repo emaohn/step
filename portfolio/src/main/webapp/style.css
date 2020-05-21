@@ -9,10 +9,15 @@
 }
 
 .photo-grid {
-
+    width: 100%;
+    display: flex;
 }
 
 .photo-grid img {
-    padding: 5px;
     width: 100%;
+}
+
+.photo-col {
+    flex: 1;
+    margin: 2px;
 }
