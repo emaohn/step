@@ -7,3 +7,12 @@
 #greeting-container {
   margin-top: 20px;
 }
+
+.photo-grid {
+
+}
+
+.photo-grid img {
+    padding: 5px;
+    width: 100%;
+}
