@@ -7,3 +7,8 @@
 #greeting-container {
   margin-top: 20px;
 }
+
+#contact img{
+    width: 50px;
+    margin: 5px;
+}
