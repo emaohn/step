@@ -50,7 +50,18 @@ function toggleProject(direction) {
  */
 
 function loadData() {
-    fetch('/data').then(response => response.text()).then(message => {
-        document.getElementById('server-container').innerText = message;
-    })
+  fetch('/data').then(response => response.json()).then(data => {
+    const commentList = document.getElementById('server-container');
+    commentList.innerText = "";
+    let messages = data.messages;
+    for (let i = 0; i < messages.length; ++i) {
+        commentList.appendChild(createListElement(messages[i].comment));
+    }
+  })
+}
+
+function createListElement(s) {
+  let listElem = document.createElement('li');
+  listElem.innerText = s;
+  return listElem;
 }
