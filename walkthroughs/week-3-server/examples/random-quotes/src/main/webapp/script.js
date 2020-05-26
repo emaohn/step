@@ -57,6 +57,7 @@ function addQuoteToDom(quote) {
  */
 function getRandomQuoteUsingArrowFunctions() {
   fetch('/random-quote').then(response => response.text()).then((quote) => {
+      console.log("hi")
     document.getElementById('quote-container').innerText = quote;
   });
 }

@@ -44,3 +44,13 @@ function toggleProject(direction) {
         }
     }
 }
+
+/*
+ * Displays data from /data url in DOM
+ */
+
+function loadData() {
+    fetch('/data').then(response => response.text()).then(message => {
+        document.getElementById('server-container').innerText = message;
+    })
+}
