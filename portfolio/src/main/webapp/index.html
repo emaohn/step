@@ -10,9 +10,6 @@
     <div id="content">
       <h1>My Portfolio</h1>
       <div id="greeting-container"></div>
-        <div id="server-container">
-
-        </div>
         <div>
             <h1>Hi, I'm Emmie</h1>
             <p>Hello! I'm 19 years old and I'm from Boston, MA.</p>
@@ -177,15 +174,25 @@
                 <p>You can check out more of my photography on my <a href="https://www.instagram.com/emmieohn/">Instagram</a> or <a href="https://unsplash.com/@emaohn">Unsplash</a>.</p>
             </div>
         </div>
-      <div id="contact">
-        <h2>Contact</h2>
-        <p>Have questions or want to work on something together? You can find me here:</p>
-        <a href="https://github.com/emaohn"><img alt="GitHub" src="./images/media-icons/github.png" /></a>
-        <a href="https://linkedin.com/in/emmieohnuki"><img alt="LinkedIn" src="./images/media-icons/linkedin.png" /></a>
-        <a href="mailto:emaohn@gmail.com"><img alt="Email" src="./images/media-icons/email.png" /></a>
-        <a href="https://facebook.com/emmieohnuki"><img alt="Facebook" src="./images/media-icons/facebook.png" /></a>
-        <a href="https://www.instagram.com/emmieohn/"><img alt="Instagram" src="./images/media-icons/instagram.png" /></a>
-      </div>
+        <div id="comments-container"></div>
+        <div id="comment-form-container">
+            <form action="/data" method="POST">
+                <p>Name</p>
+                <input type="text" name="name" placeholder="Johnny Appleseed" />
+                <p>Comment:</p>
+                <input type="text" name="comment" />
+                <input type="submit" />
+            </form>
+        </div>
+        <div id="contact">
+            <h2>Contact</h2>
+            <p>Have questions or want to work on something together? You can find me here:</p>
+            <a href="https://github.com/emaohn"><img alt="GitHub" src="./images/media-icons/github.png" /></a>
+            <a href="https://linkedin.com/in/emmieohnuki"><img alt="LinkedIn" src="./images/media-icons/linkedin.png" /></a>
+            <a href="mailto:emaohn@gmail.com"><img alt="Email" src="./images/media-icons/email.png" /></a>
+            <a href="https://facebook.com/emmieohnuki"><img alt="Facebook" src="./images/media-icons/facebook.png" /></a>
+            <a href="https://www.instagram.com/emmieohn/"><img alt="Instagram" src="./images/media-icons/instagram.png" /></a>
+        </div>
     </div>
   </body>
 </html>
