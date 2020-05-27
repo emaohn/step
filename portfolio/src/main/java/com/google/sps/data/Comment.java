@@ -8,7 +8,7 @@ package com.google.sps.data;
     private String sender;
     private String text;
 
-    public Comment(String sender, String text) {
+    public Comment(String text, String sender) {
       this.sender = sender;
       this.text = text;
     }
