@@ -13,6 +13,9 @@
 // limitations under the License.
 
 package com.google.sps.servlets;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
 import com.google.gson.Gson;
 import com.google.sps.data.Comment;
 import java.io.IOException;
@@ -28,7 +31,7 @@ public class DataServlet extends HttpServlet {
   private ArrayList<Comment> comments;
 
   public DataServlet() {
-      comments = new ArrayList<Comment>();
+    comments = new ArrayList<Comment>();
   }
 
   @Override
@@ -48,10 +51,19 @@ public class DataServlet extends HttpServlet {
         response.getWriter().println("Please enter a comment");
       return;
     }
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    datastore.put(createCommentEntity(name, comment));
+
     comments.add(new Comment(comment, name));
     response.sendRedirect("/index.html");
   }
 
+  private Entity createCommentEntity(String name, String comment) {
+    Entity commentEntity = new Entity("Comment");
+    commentEntity.setProperty("sender", name);
+    commentEntity.setProperty("text", comment);
+    return commentEntity;
+  }
   // Gets name from form input
   private String getName(HttpServletRequest request) {
     String name = request.getParameter("name");
