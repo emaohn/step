@@ -55,7 +55,8 @@ function loadData() {
     commentList.innerText = "";
     let comments = data.comments;
     for (let i = 0; i < comments.length; ++i) {
-        commentList.appendChild(createListElement(comments[i].text));
+        console.log(comments[i]);
+        commentList.appendChild(createListElement(comments[i].text + " from " + comments[i].sender));
     }
   })
 }

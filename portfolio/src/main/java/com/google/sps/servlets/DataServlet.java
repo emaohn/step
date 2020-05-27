@@ -33,14 +33,36 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    addComment("hello!");
-    addComment("bye!");
-    addComment("See ya later!");
     String msgJSON = convertToJSON();
     response.setContentType("application/json;");
     response.getWriter().println(msgJSON);
   }
-  
+
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    String name = getName(request);
+    String comment = getComment(request);
+    // Prevents users from submitting comments with no content."
+    if (comment.equals("")) {
+        response.setContentType("text/html");
+        response.getWriter().println("Please enter a comment");
+      return;
+    }
+    comments.add(new Comment(comment, name));
+    response.sendRedirect("/index.html");
+  }
+
+  // Gets name from form input
+  private String getName(HttpServletRequest request) {
+    String name = request.getParameter("name");
+    return name.equals("") ? "Anonymous" : name;
+  }
+
+  // Gets comment from form input 
+  private String getComment(HttpServletRequest request) {
+    return request.getParameter("comment");
+  }
+
   // uses Gson library to convert comments list into json
   private String convertToJSON() {
     Gson gson = new Gson();
