@@ -13,6 +13,10 @@
 // limitations under the License.
 
 package com.google.sps.servlets;
+
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -28,15 +32,10 @@ import java.util.ArrayList;
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
-  private ArrayList<Comment> comments;
-
-  public DataServlet() {
-    comments = new ArrayList<Comment>();
-  }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String msgJSON = convertToJSON();
+    String msgJSON = convertToJSON(getComments());
     response.setContentType("application/json;");
     response.getWriter().println(msgJSON);
   }
@@ -45,25 +44,43 @@ public class DataServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String name = getName(request);
     String comment = getComment(request);
+
     // Prevents users from submitting comments with no content."
     if (comment.equals("")) {
         response.setContentType("text/html");
         response.getWriter().println("Please enter a comment");
       return;
     }
+    // Store new comment into datastore
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(createCommentEntity(name, comment));
 
-    comments.add(new Comment(comment, name));
     response.sendRedirect("/index.html");
   }
 
+  // Retrieves comments from datastore and converts them into Comment objects.
+  private ArrayList<Comment> getComments() {
+    Query query = new Query("Comment");
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    PreparedQuery results = datastore.prepare(query);
+
+    ArrayList<Comment> comments = new ArrayList<Comment>();
+    for (Entity entity: results.asIterable()) {
+      String name = (String) entity.getProperty("sender");
+      String text = (String) entity.getProperty("text");
+      comments.add(new Comment(name, text));
+    }
+    return comments;
+  }
+
+  // Creates a comment entity given the sender and message
   private Entity createCommentEntity(String name, String comment) {
     Entity commentEntity = new Entity("Comment");
     commentEntity.setProperty("sender", name);
     commentEntity.setProperty("text", comment);
     return commentEntity;
   }
+
   // Gets name from form input
   private String getName(HttpServletRequest request) {
     String name = request.getParameter("name");
@@ -75,14 +92,10 @@ public class DataServlet extends HttpServlet {
     return request.getParameter("comment");
   }
 
-  // uses Gson library to convert comments list into json
-  private String convertToJSON() {
+  // uses Gson library to convert comments list into json string
+  private String convertToJSON(ArrayList<Comment> comments) {
     Gson gson = new Gson();
     String json = gson.toJson(comments);
     return "{\"comments\": " + json + "}";
-  }
-
-  private void addComment(String comment) {
-    this.comments.add(new Comment(comment));
   }
 }
