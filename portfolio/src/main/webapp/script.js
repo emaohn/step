@@ -53,13 +53,16 @@ function loadData() {
   fetch('/data').then(response => response.json()).then(data => {
     const commentList = document.getElementById('server-container');
     commentList.innerText = "";
-    let messages = data.messages;
-    for (let i = 0; i < messages.length; ++i) {
-        commentList.appendChild(createListElement(messages[i].comment));
+    let comments = data.comments;
+    for (let i = 0; i < comments.length; ++i) {
+        commentList.appendChild(createListElement(comments[i].text));
     }
   })
 }
 
+/*
+ * Creates singular list element given string
+ */
 function createListElement(s) {
   let listElem = document.createElement('li');
   listElem.innerText = s;
