@@ -50,7 +50,21 @@ function toggleProject(direction) {
  */
 
 function loadData() {
-    fetch('/data').then(response => response.text()).then(message => {
-        document.getElementById('server-container').innerText = message;
-    })
+  fetch('/data').then(response => response.json()).then(data => {
+    const commentList = document.getElementById('server-container');
+    commentList.innerText = "";
+    let comments = data.comments;
+    for (let i = 0; i < comments.length; ++i) {
+        commentList.appendChild(createListElement(comments[i].text));
+    }
+  })
+}
+
+/*
+ * Creates singular list element given string
+ */
+function createListElement(s) {
+  let listElem = document.createElement('li');
+  listElem.innerText = s;
+  return listElem;
 }
