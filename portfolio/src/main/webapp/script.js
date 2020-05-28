@@ -63,6 +63,14 @@ function loadData() {
 }
 
 /*
+ * Deletes all data
+ */
+  function deleteData() {
+    fetch('/delete-data', {method: "POST"}).then(response => {loadData(); return;} );
+  }
+
+
+/*
  * Creates singular list element given string
  */
 function createListElement(s) {

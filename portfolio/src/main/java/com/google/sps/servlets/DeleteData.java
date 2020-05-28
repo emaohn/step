@@ -19,16 +19,15 @@ public class DeleteData extends HttpServlet {
   private DatastoreService datastore;
 
   public DeleteData() {
-    this.datastore = DatastoreServiceFactory.DatastoreService();
+    this.datastore = DatastoreServiceFactory.getDatastoreService();
   }
 
   @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response) {
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     Query query = new Query("Comment");
     PreparedQuery results = datastore.prepare(query);
     for (Entity entity: results.asIterable()) {
         datastore.delete(entity.getKey());
     }
-    response.sendRedirect("/index.html");
   }
 }
