@@ -13,11 +13,6 @@ package com.google.sps.data;
       this.text = text;
     }
 
-    public Comment(String text) {
-      this.sender = "";
-      this.text = text;
-    }
-
     public String getSender() {
       return this.sender;
     }
