@@ -40,7 +40,7 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String msgJSON = convertToJSON(getComments());
+    String msgJSON = convertToJSON(getComments(getRequestNum(request)));
     response.setContentType("application/json;");
     response.getWriter().println(msgJSON);
   }
@@ -63,7 +63,7 @@ public class DataServlet extends HttpServlet {
   }
 
   // Retrieves comments from datastore and converts them into Comment objects.
-  private ArrayList<Comment> getComments() {
+  private ArrayList<Comment> getComments(int numRequests) {
     Query query = new Query("Comment");
     PreparedQuery results = datastore.prepare(query);
 
@@ -71,7 +71,11 @@ public class DataServlet extends HttpServlet {
     for (Entity entity: results.asIterable()) {
       String name = (String) entity.getProperty("sender");
       String text = (String) entity.getProperty("text");
+      System.out.println(numRequests);
       comments.add(new Comment(text, name));
+      if (comments.size() >= numRequests) {
+        break;
+      }
     }
     return comments;
   }
@@ -93,6 +97,19 @@ public class DataServlet extends HttpServlet {
   // Gets comment from form input 
   private String getComment(HttpServletRequest request) {
     return request.getParameter("comment");
+  }
+
+  //Get request number from query string
+  private int getRequestNum(HttpServletRequest request) {
+    String requestString = request.getParameter("request");
+    int requestNum;
+    try {
+      requestNum = Integer.parseInt(requestString);
+    } catch (NumberFormatException e) {
+      System.err.println("Could not convert to int: " + requestString);
+      return -1;
+    }
+    return requestNum;
   }
 
   // uses Gson library to convert comments list into json string

@@ -50,7 +50,7 @@ function toggleProject(direction) {
  */
 
 function loadData() {
-  fetch('/data').then(response => response.json()).then(data => {
+  fetch('/data?request=3').then(response => response.json()).then(data => {
     const commentList = document.getElementById('comments-container');
     commentList.innerText = "";
     let comments = data.comments;
