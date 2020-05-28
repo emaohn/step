@@ -32,6 +32,11 @@ import java.util.ArrayList;
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
+  private DatastoreService datastore;
+  
+  public DataServlet() {
+    this.datastore = DatastoreServiceFactory.getDatastoreService();
+  }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -52,7 +57,6 @@ public class DataServlet extends HttpServlet {
       return;
     }
     // Store new comment into datastore
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(createCommentEntity(name, comment));
 
     response.sendRedirect("/index.html");
@@ -61,7 +65,6 @@ public class DataServlet extends HttpServlet {
   // Retrieves comments from datastore and converts them into Comment objects.
   private ArrayList<Comment> getComments() {
     Query query = new Query("Comment");
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
 
     ArrayList<Comment> comments = new ArrayList<Comment>();
