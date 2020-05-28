@@ -71,7 +71,6 @@ public class DataServlet extends HttpServlet {
     for (Entity entity: results.asIterable()) {
       String name = (String) entity.getProperty("sender");
       String text = (String) entity.getProperty("text");
-      System.out.println(numRequests);
       comments.add(new Comment(text, name));
       if (comments.size() >= numRequests) {
         break;
