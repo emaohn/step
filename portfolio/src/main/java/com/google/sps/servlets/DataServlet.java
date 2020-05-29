@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
@@ -66,16 +67,18 @@ public class DataServlet extends HttpServlet {
   private ArrayList<Comment> getComments(int numRequests) {
     Query query = new Query("Comment");
     PreparedQuery results = datastore.prepare(query);
-
+    Iterator<Entity> resultsItr = results.asIterable().iterator();
     ArrayList<Comment> comments = new ArrayList<Comment>();
-    for (Entity entity: results.asIterable()) {
-      String name = (String) entity.getProperty("sender");
-      String text = (String) entity.getProperty("text");
-      comments.add(new Comment(text, name, entity.getKey().getId()));
-      if (comments.size() >= numRequests) {
-        break;
-      }
+    // Only returns numRequests amount of comments
+    int i = 0;
+    while (resultsItr.hasNext() && i < numRequests) {
+      Entity curEntity = resultsItr.next();
+      String name = (String) curEntity.getProperty("sender");
+      String text = (String) curEntity.getProperty("text");
+      comments.add(new Comment(text, name, curEntity.getKey().getId()));
+      i++;
     }
+
     return comments;
   }
 
