@@ -176,9 +176,16 @@
         </div>
         <div id="comment-section">
             <h2>Comments</h2>
-            <div id="comments-container"></div>
             <label for="request">Choose how many comments you'd like to display:</label>
             <input type="number" name="request" id="request-input" value="10"/>
+            <label for="sorting">Sort by:</label>
+            <select name="sorting" id="select-sorting" onChange="loadData()">
+                <option value="1">1</option>
+                    <option value="recent">Newest</option>
+                    <option value="old">Oldest</option>
+                <option value="10">10</option>
+            </select>
+            <div id="comments-container"></div>
             <button onClick="loadData()">OK</button>
             <div id="comment-form-container">
                 <form action="/data" method="POST">
