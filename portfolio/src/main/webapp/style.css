@@ -76,3 +76,10 @@ body {
     border-radius: 100%;
 }
 
+#comments-container {
+    margin-bottom: 20px;
+}
+
+#comment-form-container {
+    margin: 20px 0px;
+}

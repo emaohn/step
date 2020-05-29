@@ -51,7 +51,6 @@ function toggleProject(direction) {
 
 function loadData() {
   const request = document.getElementById("request-input");
-  console.log(request.value);
   fetch('/data?request=' + request.value).then(response => response.json()).then(data => {
     const commentList = document.getElementById('comments-container');
     commentList.innerText = "";
