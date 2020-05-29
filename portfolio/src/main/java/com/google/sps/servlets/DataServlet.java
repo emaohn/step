@@ -45,7 +45,7 @@ public class DataServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String msgJSON = convertToJSON(getComments(getRequestNum(request)));
+    String msgJSON = convertToJSON(getComments(getRequestNum(request), prefersDescending(request)));
     response.setContentType("application/json;");
     response.getWriter().println(msgJSON);
   }
@@ -68,8 +68,15 @@ public class DataServlet extends HttpServlet {
   }
 
   // Retrieves comments from datastore and converts them into Comment objects.
-  private ArrayList<Comment> getComments(int numRequests) {
-    Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
+  private ArrayList<Comment> getComments(int numRequests, boolean prefersDescending) {
+    Query query = new Query("Comment");
+    if (prefersDescending) {
+      System.out.println("desending order");
+      query = query.addSort("timestamp", SortDirection.DESCENDING);
+    } else {
+      System.out.println("ascending order order");
+      query = query.addSort("timestamp", SortDirection.ASCENDING);
+    }
     PreparedQuery results = datastore.prepare(query);
     Iterator<Entity> resultsItr = results.asIterable().iterator();
     ArrayList<Comment> comments = new ArrayList<Comment>();
@@ -118,6 +125,12 @@ public class DataServlet extends HttpServlet {
       return 10;
     }
     return requestNum;
+  }
+
+  //Get sorting preference from query string
+  private boolean prefersDescending(HttpServletRequest request) {
+    String preference = request.getParameter("sorting");
+    return preference.equals("newest") ? true : false;
   }
 
   // uses Gson library to convert comments list into json string

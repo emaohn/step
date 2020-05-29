@@ -180,13 +180,11 @@
             <input type="number" name="request" id="request-input" value="10"/>
             <label for="sorting">Sort by:</label>
             <select name="sorting" id="select-sorting" onChange="loadData()">
-                <option value="1">1</option>
-                    <option value="recent">Newest</option>
-                    <option value="old">Oldest</option>
-                <option value="10">10</option>
+                <option value="newest">Newest</option>
+                <option value="oldest">Oldest</option>
             </select>
+            <button onClick="loadData()">Apply</button>
             <div id="comments-container"></div>
-            <button onClick="loadData()">OK</button>
             <div id="comment-form-container">
                 <form action="/data" method="POST">
                     <label for="name">Name</label><br>
