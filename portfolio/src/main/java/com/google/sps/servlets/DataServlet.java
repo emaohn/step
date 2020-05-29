@@ -69,7 +69,7 @@ public class DataServlet extends HttpServlet {
 
   // Retrieves comments from datastore and converts them into Comment objects.
   private ArrayList<Comment> getComments(int numRequests) {
-    Query query = new Query("Comment");
+    Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
     PreparedQuery results = datastore.prepare(query);
     Iterator<Entity> resultsItr = results.asIterable().iterator();
     ArrayList<Comment> comments = new ArrayList<Comment>();
@@ -79,7 +79,8 @@ public class DataServlet extends HttpServlet {
       Entity curEntity = resultsItr.next();
       String name = (String) curEntity.getProperty("sender");
       String text = (String) curEntity.getProperty("text");
-      comments.add(new Comment(text, name, curEntity.getKey().getId()));
+      long timestamp = (long) curEntity.getProperty("timestamp");
+      comments.add(new Comment(text, name, curEntity.getKey().getId(), timestamp));
       i++;
     }
 
@@ -91,6 +92,7 @@ public class DataServlet extends HttpServlet {
     Entity commentEntity = new Entity("Comment");
     commentEntity.setProperty("sender", name);
     commentEntity.setProperty("text", comment);
+    commentEntity.setProperty("timestamp", System.currentTimeMillis());
     return commentEntity;
   }
 

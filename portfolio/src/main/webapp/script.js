@@ -79,6 +79,9 @@ function createCommentDiv(comment) {
 
   let commentElem = document.createElement('p');
   commentElem.innerText = comment.sender + " commented: " + comment.text;
+
+  let commentTime = document.createElement('p');
+  commentTime.innerText = getTimeDif(comment.timestamp);
   
   let deleteBtn = document.createElement('button');
   deleteBtn.innerText = "Delete";
@@ -88,7 +91,27 @@ function createCommentDiv(comment) {
   })
 
   commentDiv.appendChild(commentElem);
+  commentDiv.appendChild(commentTime);
   commentDiv.appendChild(deleteBtn);
 
   return commentDiv;
+}
+
+/*
+ * Returns string representation of time difference between comment and user
+ */
+
+function getTimeDif(commentTime) {
+  let date = new Date();
+  let timeDiffMillis = date.getTime() - commentTime;
+  let timeDiff = timeDiffMillis / 1000;
+  if (timeDiff < 60) {
+    return Math.floor(timeDiff) + " seconds";
+  } else if (timeDiff < 3600) {
+    return Math.floor(timeDiff/60) + " minutes ago";
+  } else if (timeDiff < 86400) {
+    return Math.floor(timeDiff/3600) + " hours ago";
+  } else {
+    return Math.floor(timeDiff/86400) + " days ago";
+  }
 }
