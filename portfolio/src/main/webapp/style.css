@@ -2,16 +2,6 @@ body {
     background-color: #fcfcfc;
 }
 
-button {
-    background-color: #fcfcfc;
-    border-color: #42b8a4;
-    color: #42b8a4;
-    text-align: center;
-    padding: 12px 30px;
-    font-size: 17px;
-    border-radius: 8%;
-}
-
 #content {
   margin-left: auto;
   margin-right: auto;
@@ -68,6 +58,16 @@ button {
 
 .project-nav {
     text-align: center;
+}
+
+.project button {
+    background-color: #fcfcfc;
+    border-color: #42b8a4;
+    color: #42b8a4;
+    text-align: center;
+    padding: 12px 30px;
+    font-size: 17px;
+    border-radius: 8%;
 }
 
 #avatar {
