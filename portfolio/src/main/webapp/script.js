@@ -68,7 +68,7 @@ function loadData() {
 function deleteData(comment) {
   const params = new URLSearchParams();
   params.append('id', comment.id);
-  fetch('/delete-data', {method: 'POST', body: params});
+  fetch('/delete-data', {method: 'POST', body: params}).then(response => loadData());
 }
 
 /*
