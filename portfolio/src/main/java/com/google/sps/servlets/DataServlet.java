@@ -109,7 +109,7 @@ public class DataServlet extends HttpServlet {
       requestNum = Integer.parseInt(requestString);
     } catch (NumberFormatException e) {
       System.err.println("Could not convert to int: " + requestString);
-      return -1;
+      return 10;
     }
     return requestNum;
   }
