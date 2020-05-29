@@ -6,6 +6,8 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.gson.Gson;
 import com.google.sps.data.Comment;
 import java.io.IOException;
@@ -24,10 +26,9 @@ public class DeleteData extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Query query = new Query("Comment");
-    PreparedQuery results = datastore.prepare(query);
-    for (Entity entity: results.asIterable()) {
-        datastore.delete(entity.getKey());
-    }
+    long id = Long.parseLong(request.getParameter("id"));
+
+    Key commentEntityKey = KeyFactory.createKey("Comment", id);
+    datastore.delete(commentEntityKey);
   }
 }

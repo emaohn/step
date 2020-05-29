@@ -56,25 +56,39 @@ function loadData() {
     commentList.innerText = "";
     let comments = data.comments;
     for (let i = 0; i < comments.length; ++i) {
-        console.log(comments[i]);
-        commentList.appendChild(createListElement(comments[i].text + " from " + comments[i].sender));
+        commentList.appendChild(createCommentDiv(comments[i]));
     }
   })
 }
 
 /*
- * Deletes all data
- */
-  function deleteData() {
-    fetch('/delete-data', {method: "POST"}).then(response => {loadData(); return;} );
-  }
-
+ * Overloaded delete function, deletes specific comment
+ */ 
+function deleteData(comment) {
+  const params = new URLSearchParams();
+  params.append('id', comment.id);
+  fetch('/delete-data', {method: 'POST', body: params});
+}
 
 /*
  * Creates singular list element given string
  */
-function createListElement(s) {
-  let listElem = document.createElement('li');
-  listElem.innerText = s;
-  return listElem;
+function createCommentDiv(comment) {
+  let commentDiv = document.createElement('div');
+  commentDiv.id = comment.id;
+
+  let commentElem = document.createElement('p');
+  commentElem.innerText = comment.sender + " commented: " + comment.text;
+  
+  let deleteBtn = document.createElement('button');
+  deleteBtn.innerText = "Delete";
+  deleteBtn.addEventListener('click', () => {
+    deleteData(comment);
+    commentDiv.remove();
+  })
+
+  commentDiv.appendChild(commentElem);
+  commentDiv.appendChild(deleteBtn);
+
+  return commentDiv;
 }
