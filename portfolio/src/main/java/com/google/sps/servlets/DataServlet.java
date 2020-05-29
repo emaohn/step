@@ -29,14 +29,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Iterator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
   private DatastoreService datastore;
-  
+  private Logger logger;
+
   public DataServlet() {
     this.datastore = DatastoreServiceFactory.getDatastoreService();
+    this.logger = LogManager.getLogger("Error");
   }
 
   @Override
@@ -108,7 +112,7 @@ public class DataServlet extends HttpServlet {
     try {
       requestNum = Integer.parseInt(requestString);
     } catch (NumberFormatException e) {
-      System.err.println("Could not convert to int: " + requestString);
+      logger.error("Could not conver to int: " + requestString);
       return 10;
     }
     return requestNum;
