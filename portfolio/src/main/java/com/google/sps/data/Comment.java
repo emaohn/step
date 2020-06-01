@@ -9,12 +9,14 @@ package com.google.sps.data;
     private String text;
     private long id;
     private long timestamp;
+    private String imgURL;
 
-    public Comment(String text, String sender, long id, long timestamp) {
+    public Comment(String text, String sender, long id, long timestamp, String img) {
       this.sender = sender;
       this.text = text;
       this.id = id;
       this.timestamp = timestamp;
+      this.imgURL = img;
     }
 
     public String getSender() {
