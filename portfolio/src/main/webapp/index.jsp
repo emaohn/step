@@ -1,7 +1,7 @@
 <%@ page import="com.google.appengine.api.blobstore.BlobstoreService" %>
 <%@ page import="com.google.appengine.api.blobstore.BlobstoreServiceFactory" %>
 <% BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
-   String uploadUrl = blobstoreService.createUploadUrl("/my-form-handler"); %>
+   String uploadUrl = blobstoreService.createUploadUrl("/upload-handler"); %>
 <!DOCTYPE html>
 <html>
   <head>
