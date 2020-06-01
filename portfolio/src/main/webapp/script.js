@@ -81,19 +81,24 @@ function createCommentDiv(comment) {
 
   let commentElem = document.createElement('p');
   commentElem.innerText = comment.sender + " commented: " + comment.text;
+  commentDiv.appendChild(commentElem);
+  
+  if (comment.hasOwnProperty('imgURL')) {
+    let commentImg = document.createElement('img');
+    commentImg.src = comment.imgURL;
+    commentDiv.append(commentImg);
+  }
 
   let commentTime = document.createElement('p');
   commentTime.innerText = getTimeDif(comment.timestamp);
-  
+  commentDiv.appendChild(commentTime);
+
   let deleteBtn = document.createElement('button');
   deleteBtn.innerText = "Delete";
   deleteBtn.addEventListener('click', () => {
     deleteData(comment);
     commentDiv.remove();
   })
-
-  commentDiv.appendChild(commentElem);
-  commentDiv.appendChild(commentTime);
   commentDiv.appendChild(deleteBtn);
 
   return commentDiv;
