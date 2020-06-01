@@ -36,7 +36,6 @@ public class UploadHandlerServlet extends HttpServlet {
   private Logger logger;
 
   public UploadHandlerServlet() {
-    System.out.println("HELLO");
     this.datastore = DatastoreServiceFactory.getDatastoreService();
     this.logger = LogManager.getLogger("Error");
   }
@@ -46,7 +45,6 @@ public class UploadHandlerServlet extends HttpServlet {
     String name = getName(request);
     String comment = getComment(request);
     String imageUrl = getUploadedFileUrl(request, "image");
-    System.out.println("IMAGEEE URLLL" + imageUrl);
 
     // Prevents users from submitting comments with no content."
     if (comment.equals("")) {
