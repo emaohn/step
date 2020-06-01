@@ -83,3 +83,7 @@ body {
 #comment-form-container {
     margin: 20px 0px;
 }
+
+#comments-container img {
+    height: 250px;
+}
