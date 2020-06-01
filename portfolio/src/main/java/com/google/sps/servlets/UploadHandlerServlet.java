@@ -55,7 +55,7 @@ public class UploadHandlerServlet extends HttpServlet {
     // Store new comment into datastore
     datastore.put(createCommentEntity(name, comment, imageUrl));
 
-    response.sendRedirect("/index.html");
+    response.sendRedirect("/index.jsp");
   }
 
   // Creates a comment entity given the sender and message
