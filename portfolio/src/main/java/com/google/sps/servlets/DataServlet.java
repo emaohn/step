@@ -71,10 +71,8 @@ public class DataServlet extends HttpServlet {
   private ArrayList<Comment> getComments(int numRequests, boolean prefersDescending) {
     Query query = new Query("Comment");
     if (prefersDescending) {
-      System.out.println("desending order");
       query = query.addSort("timestamp", SortDirection.DESCENDING);
     } else {
-      System.out.println("ascending order order");
       query = query.addSort("timestamp", SortDirection.ASCENDING);
     }
     PreparedQuery results = datastore.prepare(query);
@@ -121,7 +119,7 @@ public class DataServlet extends HttpServlet {
     try {
       requestNum = Integer.parseInt(requestString);
     } catch (NumberFormatException e) {
-      logger.error("Could not conver to int: " + requestString);
+      logger.error("Could not convert to int: " + requestString);
       return 10;
     }
     return requestNum;
