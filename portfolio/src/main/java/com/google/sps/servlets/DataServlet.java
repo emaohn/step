@@ -28,19 +28,24 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Iterator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
   private DatastoreService datastore;
-  
+  private Logger logger;
+
   public DataServlet() {
     this.datastore = DatastoreServiceFactory.getDatastoreService();
+    this.logger = LogManager.getLogger("Error");
   }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String msgJSON = convertToJSON(getComments());
+    String msgJSON = convertToJSON(getComments(getRequestNum(request), prefersDescending(request)));
     response.setContentType("application/json;");
     response.getWriter().println(msgJSON);
   }
@@ -63,16 +68,27 @@ public class DataServlet extends HttpServlet {
   }
 
   // Retrieves comments from datastore and converts them into Comment objects.
-  private ArrayList<Comment> getComments() {
+  private ArrayList<Comment> getComments(int numRequests, boolean prefersDescending) {
     Query query = new Query("Comment");
-    PreparedQuery results = datastore.prepare(query);
-
-    ArrayList<Comment> comments = new ArrayList<Comment>();
-    for (Entity entity: results.asIterable()) {
-      String name = (String) entity.getProperty("sender");
-      String text = (String) entity.getProperty("text");
-      comments.add(new Comment(text, name));
+    if (prefersDescending) {
+      query = query.addSort("timestamp", SortDirection.DESCENDING);
+    } else {
+      query = query.addSort("timestamp", SortDirection.ASCENDING);
     }
+    PreparedQuery results = datastore.prepare(query);
+    Iterator<Entity> resultsItr = results.asIterable().iterator();
+    ArrayList<Comment> comments = new ArrayList<Comment>();
+    // Only returns numRequests amount of comments
+    int i = 0;
+    while (resultsItr.hasNext() && i < numRequests) {
+      Entity curEntity = resultsItr.next();
+      String name = (String) curEntity.getProperty("sender");
+      String text = (String) curEntity.getProperty("text");
+      long timestamp = (long) curEntity.getProperty("timestamp");
+      comments.add(new Comment(text, name, curEntity.getKey().getId(), timestamp));
+      i++;
+    }
+
     return comments;
   }
 
@@ -81,6 +97,7 @@ public class DataServlet extends HttpServlet {
     Entity commentEntity = new Entity("Comment");
     commentEntity.setProperty("sender", name);
     commentEntity.setProperty("text", comment);
+    commentEntity.setProperty("timestamp", System.currentTimeMillis());
     return commentEntity;
   }
 
@@ -93,6 +110,25 @@ public class DataServlet extends HttpServlet {
   // Gets comment from form input 
   private String getComment(HttpServletRequest request) {
     return request.getParameter("comment");
+  }
+
+  //Get request number from query string
+  private int getRequestNum(HttpServletRequest request) {
+    String requestString = request.getParameter("request");
+    int requestNum;
+    try {
+      requestNum = Integer.parseInt(requestString);
+    } catch (NumberFormatException e) {
+      logger.error("Could not convert to int: " + requestString);
+      return 10;
+    }
+    return requestNum;
+  }
+
+  //Get sorting preference from query string
+  private boolean prefersDescending(HttpServletRequest request) {
+    String preference = request.getParameter("sorting");
+    return preference.equals("newest") ? true : false;
   }
 
   // uses Gson library to convert comments list into json string

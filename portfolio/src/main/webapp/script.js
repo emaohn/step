@@ -50,22 +50,69 @@ function toggleProject(direction) {
  */
 
 function loadData() {
-  fetch('/data').then(response => response.json()).then(data => {
+  const request = document.getElementById('request-input');
+  const sorting = document.getElementById('select-sorting');
+  fetch('/data?request=' + request.value + '&sorting=' + sorting.value).then(response => response.json()).then(data => {
     const commentList = document.getElementById('comments-container');
     commentList.innerText = "";
     let comments = data.comments;
     for (let i = 0; i < comments.length; ++i) {
-        console.log(comments[i]);
-        commentList.appendChild(createListElement(comments[i].text + " from " + comments[i].sender));
+        commentList.appendChild(createCommentDiv(comments[i]));
     }
   })
 }
 
 /*
+ * Overloaded delete function, deletes specific comment
+ */ 
+function deleteData(comment) {
+  const params = new URLSearchParams();
+  params.append('id', comment.id);
+  fetch('/delete-data', {method: 'POST', body: params}).then(response => loadData());
+}
+
+/*
  * Creates singular list element given string
  */
-function createListElement(s) {
-  let listElem = document.createElement('li');
-  listElem.innerText = s;
-  return listElem;
+function createCommentDiv(comment) {
+  let commentDiv = document.createElement('div');
+  commentDiv.id = comment.id;
+
+  let commentElem = document.createElement('p');
+  commentElem.innerText = comment.sender + " commented: " + comment.text;
+
+  let commentTime = document.createElement('p');
+  commentTime.innerText = getTimeDif(comment.timestamp);
+  
+  let deleteBtn = document.createElement('button');
+  deleteBtn.innerText = "Delete";
+  deleteBtn.addEventListener('click', () => {
+    deleteData(comment);
+    commentDiv.remove();
+  })
+
+  commentDiv.appendChild(commentElem);
+  commentDiv.appendChild(commentTime);
+  commentDiv.appendChild(deleteBtn);
+
+  return commentDiv;
+}
+
+/*
+ * Returns string representation of time difference between comment and user
+ */
+
+function getTimeDif(commentTime) {
+  let date = new Date();
+  let timeDiffMillis = date.getTime() - commentTime;
+  let timeDiff = timeDiffMillis / 1000;
+  if (timeDiff < 60) {
+    return Math.floor(timeDiff) + " seconds";
+  } else if (timeDiff < 3600) {
+    return Math.floor(timeDiff/60) + " minutes ago";
+  } else if (timeDiff < 86400) {
+    return Math.floor(timeDiff/3600) + " hours ago";
+  } else {
+    return Math.floor(timeDiff/86400) + " days ago";
+  }
 }

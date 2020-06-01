@@ -7,10 +7,14 @@ package com.google.sps.data;
  public class Comment {
     private String sender;
     private String text;
+    private long id;
+    private long timestamp;
 
-    public Comment(String text, String sender) {
+    public Comment(String text, String sender, long id, long timestamp) {
       this.sender = sender;
       this.text = text;
+      this.id = id;
+      this.timestamp = timestamp;
     }
 
     public String getSender() {
@@ -19,5 +23,13 @@ package com.google.sps.data;
      
     public String getText() {
       return this.text;
+    }
+
+    public long getId() {
+        return this.id;
+    }
+
+    public long getTimestamp() {
+        return this.timestamp;
     }
  }
