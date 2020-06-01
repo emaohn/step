@@ -50,22 +50,6 @@ public class DataServlet extends HttpServlet {
     response.getWriter().println(msgJSON);
   }
 
-  @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String name = getName(request);
-    String comment = getComment(request);
-
-    // Prevents users from submitting comments with no content."
-    if (comment.equals("")) {
-        response.setContentType("text/html");
-        response.getWriter().println("Please enter a comment");
-      return;
-    }
-    // Store new comment into datastore
-    datastore.put(createCommentEntity(name, comment));
-
-    response.sendRedirect("/index.html");
-  }
 
   // Retrieves comments from datastore and converts them into Comment objects.
   private ArrayList<Comment> getComments(int numRequests, boolean prefersDescending) {
@@ -85,31 +69,12 @@ public class DataServlet extends HttpServlet {
       String name = (String) curEntity.getProperty("sender");
       String text = (String) curEntity.getProperty("text");
       long timestamp = (long) curEntity.getProperty("timestamp");
-      comments.add(new Comment(text, name, curEntity.getKey().getId(), timestamp));
+      String imgUrl = (String) curEntity.getProperty("imgUrl");
+      comments.add(new Comment(text, name, curEntity.getKey().getId(), timestamp, imgUrl));
       i++;
     }
 
     return comments;
-  }
-
-  // Creates a comment entity given the sender and message
-  private Entity createCommentEntity(String name, String comment) {
-    Entity commentEntity = new Entity("Comment");
-    commentEntity.setProperty("sender", name);
-    commentEntity.setProperty("text", comment);
-    commentEntity.setProperty("timestamp", System.currentTimeMillis());
-    return commentEntity;
-  }
-
-  // Gets name from form input
-  private String getName(HttpServletRequest request) {
-    String name = request.getParameter("name");
-    return name.equals("") ? "Anonymous" : name;
-  }
-
-  // Gets comment from form input 
-  private String getComment(HttpServletRequest request) {
-    return request.getParameter("comment");
   }
 
   //Get request number from query string
