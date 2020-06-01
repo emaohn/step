@@ -53,6 +53,7 @@ function loadData() {
   const request = document.getElementById('request-input');
   const sorting = document.getElementById('select-sorting');
   fetch('/data?request=' + request.value + '&sorting=' + sorting.value).then(response => response.json()).then(data => {
+    console.log(data)
     const commentList = document.getElementById('comments-container');
     commentList.innerText = "";
     let comments = data.comments;

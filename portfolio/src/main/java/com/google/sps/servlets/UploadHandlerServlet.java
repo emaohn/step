@@ -53,17 +53,18 @@ public class UploadHandlerServlet extends HttpServlet {
       return;
     }
     // Store new comment into datastore
-    datastore.put(createCommentEntity(name, comment));
+    datastore.put(createCommentEntity(name, comment, imageUrl));
 
     response.sendRedirect("/index.html");
   }
 
   // Creates a comment entity given the sender and message
-  private Entity createCommentEntity(String name, String comment) {
+  private Entity createCommentEntity(String name, String comment, String imgUrl) {
     Entity commentEntity = new Entity("Comment");
     commentEntity.setProperty("sender", name);
     commentEntity.setProperty("text", comment);
     commentEntity.setProperty("timestamp", System.currentTimeMillis());
+    commentEntity.setProperty("imgUrl", imgUrl);
     return commentEntity;
   }
 
@@ -76,19 +77,6 @@ public class UploadHandlerServlet extends HttpServlet {
   // Gets comment from form input 
   private String getComment(HttpServletRequest request) {
     return request.getParameter("comment");
-  }
-
-  //Get request number from query string
-  private int getRequestNum(HttpServletRequest request) {
-    String requestString = request.getParameter("request");
-    int requestNum;
-    try {
-      requestNum = Integer.parseInt(requestString);
-    } catch (NumberFormatException e) {
-      logger.error("Could not convert to int: " + requestString);
-      return 10;
-    }
-    return requestNum;
   }
 
   /** Returns a URL that points to the uploaded file, or null if the user didn't upload a file. */
