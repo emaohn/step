@@ -25,6 +25,10 @@ import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.images.ImagesService;
 import com.google.appengine.api.images.ImagesServiceFactory;
 import com.google.appengine.api.images.ServingUrlOptions;
+import java.net.URL;
+import java.util.List;
+import java.util.Map;
+import java.net.MalformedURLException;
 
 @WebServlet("/upload-handler")
 public class UploadHandlerServlet extends HttpServlet {
@@ -32,6 +36,7 @@ public class UploadHandlerServlet extends HttpServlet {
   private Logger logger;
 
   public UploadHandlerServlet() {
+    System.out.println("HELLO");
     this.datastore = DatastoreServiceFactory.getDatastoreService();
     this.logger = LogManager.getLogger("Error");
   }
@@ -40,6 +45,8 @@ public class UploadHandlerServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String name = getName(request);
     String comment = getComment(request);
+    String imageUrl = getUploadedFileUrl(request, "image");
+    System.out.println("IMAGEEE URLLL" + imageUrl);
 
     // Prevents users from submitting comments with no content."
     if (comment.equals("")) {
@@ -84,5 +91,37 @@ public class UploadHandlerServlet extends HttpServlet {
       return 10;
     }
     return requestNum;
+  }
+
+  /** Returns a URL that points to the uploaded file, or null if the user didn't upload a file. */
+  private String getUploadedFileUrl(HttpServletRequest request, String formInputElementName) {
+    BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+    Map<String, List<BlobKey>> blobs = blobstoreService.getUploads(request);
+    List<BlobKey> blobKeys = blobs.get("image");
+
+    // User submitted form without selecting a file, so we can't get a URL. (dev server)
+    if (blobKeys == null || blobKeys.isEmpty()) {
+      return null;
+    }
+  
+    // Our form only contains a single file input, so get the first index.
+    BlobKey blobKey = blobKeys.get(0);
+
+    // User submitted form without selecting a file, so we can't get a URL. (live server)
+    BlobInfo blobInfo = new BlobInfoFactory().loadBlobInfo(blobKey);
+    if (blobInfo.getSize() == 0) {
+      blobstoreService.delete(blobKey);
+      return null;
+    }
+
+    ImagesService imagesService = ImagesServiceFactory.getImagesService();
+    ServingUrlOptions options = ServingUrlOptions.Builder.withBlobKey(blobKey);
+
+    try {
+      URL url = new URL(imagesService.getServingUrl(options));
+      return url.getPath();
+    } catch (MalformedURLException e) {
+      return imagesService.getServingUrl(options);
+    }
   }
 }
