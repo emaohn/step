@@ -100,7 +100,6 @@ public class DataServlet extends HttpServlet {
   //Get sorting preference from query string
   private boolean prefersDescending(HttpServletRequest request) {
     String preference = request.getParameter("sorting");
-    System.out.println(preference);
     return preference.equals("newest") ? true : false;
   }
 
