@@ -79,8 +79,12 @@ function createCommentDiv(comment) {
   let commentDiv = document.createElement('div');
   commentDiv.id = comment.id;
 
+  let senderElem = document.createElement('p');
+  senderElem.innerText = comment.sender + " commented:";
+  commentDiv.appendChild(senderElem);
+
   let commentElem = document.createElement('p');
-  commentElem.innerText = comment.sender + " commented: " + comment.text;
+  commentElem.innerText = comment.text;
   commentDiv.appendChild(commentElem);
   
   if (comment.hasOwnProperty('imgURL')) {
