@@ -29,15 +29,19 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.net.MalformedURLException;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 
 @WebServlet("/upload-handler")
 public class UploadHandlerServlet extends HttpServlet {
   private DatastoreService datastore;
   private Logger logger;
+  private UserService userService;
 
   public UploadHandlerServlet() {
     this.datastore = DatastoreServiceFactory.getDatastoreService();
     this.logger = LogManager.getLogger("Error");
+    this.userService = UserServiceFactory.getUserService();
   }
   
   @Override
@@ -70,8 +74,9 @@ public class UploadHandlerServlet extends HttpServlet {
 
   // Gets name from form input
   private String getName(HttpServletRequest request) {
-    String name = request.getParameter("name");
-    return name.equals("") ? "Anonymous" : name;
+    //String name = request.getParameter("name");
+    //return name.equals("") ? "Anonymous" : name;
+    return userService.getCurrentUser().getEmail();
   }
 
   // Gets comment from form input 
