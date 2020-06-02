@@ -125,22 +125,25 @@ function getTimeDif(commentTime) {
 
 // fetches login status
 function getLoginStatus() {
-  return fetch('/login-status').then(response => response.text()).then(status => {
-    return status === 'true' ? true : false;
-  });
+  return fetch('/login-status').then(response => response.json());
 }
 
 // renders comment-form based on user login status
 function renderCommentForm() {
-  const commentForm = document.getElementById('comment-form');
-  const loginLink = document.getElementById('login-link');
   getLoginStatus().then(status => {
-    if (status) {
+    const commentForm = document.getElementById('comment-form');
+    const logLink = document.getElementById('login-logout-link');
+
+    const isLoggedIn = status.status;
+    const url = status.url;
+
+    if (isLoggedIn) {
       commentForm.style.display = 'block';
-      loginLink.style.display = 'none';
+      logLink.innerText = 'logout here';
     } else {
       commentForm.style.display = 'none';
-      loginLink.style.display = 'block';
+      logLink.innerText = 'login here';
     }
-  })
+    logLink.href = url;
+  });
 }

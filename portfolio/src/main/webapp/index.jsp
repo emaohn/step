@@ -198,7 +198,7 @@
                     <input type="file" name="image" />
                     <input type="submit" /><br>
                 </form>
-                <p id="login-link">To be able to comment, login <a href="#">here</a>.</p>
+                <a id="login-logout-link"></a>
             </div>
         </div>
         <div id="contact">
