@@ -74,6 +74,7 @@ public class UploadHandlerServlet extends HttpServlet {
     return commentEntity;
   }
 
+  // returns username from optional name input, otherwise uses user's email
   private String getDisplayName(HttpServletRequest request) {
     String nameParam = request.getParameter("name");
     return nameParam.equals("") ? getSender(request) : nameParam;
