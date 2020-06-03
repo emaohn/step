@@ -36,9 +36,10 @@ public final class FindMeetingQuery {
             TimeRange eventRange = e.getWhen();
 
             if (curRange.overlaps(eventRange)) {
-                // if event timerange completely covers this timerange, then remove the timerange completely
+                // case 1: current timerange is within event timerange => no part of timerange works so remove
                 if (eventRange.contains(curRange)) {
                     timeranges.remove(i);
+                // case 2: event timerange is within current timerange
                 } else if (curRange.contains(eventRange)) {
                     int numNewRanges = 0;
                     if (eventRange.start() - curRange.start() >= request.getDuration()) {
@@ -49,6 +50,7 @@ public final class FindMeetingQuery {
                     }
                     timeranges.remove(i);
                     i += numNewRanges;
+                // case 3: slight slight overlap: either event starts before timerange or starts during and continues past timerange
                 } else {
                     int start = curRange.start() < eventRange.start() ? curRange.start() : eventRange.end();
                     int end = curRange.end() < eventRange.end() ? eventRange.start() - 1 : curRange.end();
@@ -61,9 +63,11 @@ public final class FindMeetingQuery {
                     }
                 }
             } else {
+                //if no overlap then timerange is safe, keep untouched
                 i++;
             }
           }
+          // no need to check other people in the same event
           break;
         }
       }
