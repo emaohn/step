@@ -191,13 +191,14 @@
             <div id="comments-container"></div>
             <div id="comment-form-container">
                 <form id="comment-form" method="POST" enctype="multipart/form-data" action="<%= uploadUrl %>">
-                    <label for="name">Name</label><br>
+                    <label for="name">Nickname (Optional): </label><br>
                     <input type="text" name="name" placeholder="Johnny Appleseed" /><br>
                     <label for="comment">Comment:</label><br>
                     <input type="text" name="comment" />
                     <input type="file" name="image" />
                     <input type="submit" /><br>
                 </form>
+                <a id="login-logout-link"></a>
             </div>
         </div>
         <div id="contact">

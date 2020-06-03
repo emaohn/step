@@ -31,16 +31,20 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
   private DatastoreService datastore;
   private Logger logger;
+  private UserService userService;
 
   public DataServlet() {
     this.datastore = DatastoreServiceFactory.getDatastoreService();
     this.logger = LogManager.getLogger("Error");
+    this.userService = UserServiceFactory.getUserService();
   }
 
   @Override
@@ -64,9 +68,12 @@ public class DataServlet extends HttpServlet {
     ArrayList<Comment> comments = new ArrayList<Comment>();
     // Only returns numRequests amount of comments
     int i = 0;
+    String userId = userService.isUserLoggedIn() ? userService.getCurrentUser().getEmail() : null;
     while (resultsItr.hasNext() && i < numRequests) {
       Entity curEntity = resultsItr.next();
-      String name = (String) curEntity.getProperty("sender");
+      String sender = (String) curEntity.getProperty("sender");
+      // Display name will be "I" if the current user made the comment
+      String name = userId != null && sender.equals(userId) ? "I" : (String) curEntity.getProperty("displayName");
       String text = (String) curEntity.getProperty("text");
       long timestamp = (long) curEntity.getProperty("timestamp");
       String imgUrl = (String) curEntity.getProperty("imgUrl");

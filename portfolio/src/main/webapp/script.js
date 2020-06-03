@@ -53,14 +53,14 @@ function loadData() {
   const request = document.getElementById('request-input');
   const sorting = document.getElementById('select-sorting');
   fetch('/data?request=' + request.value + '&sorting=' + sorting.value).then(response => response.json()).then(data => {
-    console.log(data)
     const commentList = document.getElementById('comments-container');
     commentList.innerText = "";
     let comments = data.comments;
     for (let i = 0; i < comments.length; ++i) {
         commentList.appendChild(createCommentDiv(comments[i]));
     }
-  })
+  });
+  renderCommentForm();
 }
 
 /*
@@ -79,8 +79,12 @@ function createCommentDiv(comment) {
   let commentDiv = document.createElement('div');
   commentDiv.id = comment.id;
 
+  let senderElem = document.createElement('p');
+  senderElem.innerText = comment.sender + " commented:";
+  commentDiv.appendChild(senderElem);
+
   let commentElem = document.createElement('p');
-  commentElem.innerText = comment.sender + " commented: " + comment.text;
+  commentElem.innerText = comment.text;
   commentDiv.appendChild(commentElem);
   
   if (comment.hasOwnProperty('imgURL')) {
@@ -121,4 +125,29 @@ function getTimeDif(commentTime) {
   } else {
     return Math.floor(timeDiff/86400) + " days ago";
   }
+}
+
+// fetches login status
+function getLoginStatus() {
+  return fetch('/login-status').then(response => response.json());
+}
+
+// renders comment-form based on user login status
+function renderCommentForm() {
+  getLoginStatus().then(status => {
+    const commentForm = document.getElementById('comment-form');
+    const logLink = document.getElementById('login-logout-link');
+
+    const isLoggedIn = status.status;
+    const url = status.url;
+
+    if (isLoggedIn) {
+      commentForm.style.display = 'block';
+      logLink.innerText = 'logout here';
+    } else {
+      commentForm.style.display = 'none';
+      logLink.innerText = 'login here';
+    }
+    logLink.href = url;
+  });
 }

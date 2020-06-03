@@ -29,20 +29,25 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.net.MalformedURLException;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 
 @WebServlet("/upload-handler")
 public class UploadHandlerServlet extends HttpServlet {
   private DatastoreService datastore;
   private Logger logger;
+  private UserService userService;
 
   public UploadHandlerServlet() {
     this.datastore = DatastoreServiceFactory.getDatastoreService();
     this.logger = LogManager.getLogger("Error");
+    this.userService = UserServiceFactory.getUserService();
   }
   
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String name = getName(request);
+    String sender = getSender(request);
+    String displayName = getDisplayName(request);
     String comment = getComment(request);
     String imageUrl = getUploadedFileUrl(request, "image");
 
@@ -53,25 +58,31 @@ public class UploadHandlerServlet extends HttpServlet {
       return;
     }
     // Store new comment into datastore
-    datastore.put(createCommentEntity(name, comment, imageUrl));
+    datastore.put(createCommentEntity(sender, displayName, comment, imageUrl));
 
     response.sendRedirect("/index.jsp");
   }
 
   // Creates a comment entity given the sender and message
-  private Entity createCommentEntity(String name, String comment, String imgUrl) {
+  private Entity createCommentEntity(String sender, String displayName, String comment, String imgUrl) {
     Entity commentEntity = new Entity("Comment");
-    commentEntity.setProperty("sender", name);
+    commentEntity.setProperty("displayName", displayName);
+    commentEntity.setProperty("sender", sender);
     commentEntity.setProperty("text", comment);
     commentEntity.setProperty("timestamp", System.currentTimeMillis());
     commentEntity.setProperty("imgUrl", imgUrl);
     return commentEntity;
   }
 
+  // returns username from optional name input, otherwise uses user's email
+  private String getDisplayName(HttpServletRequest request) {
+    String nameParam = request.getParameter("name");
+    return nameParam.equals("") ? getSender(request) : nameParam;
+  }
+
   // Gets name from form input
-  private String getName(HttpServletRequest request) {
-    String name = request.getParameter("name");
-    return name.equals("") ? "Anonymous" : name;
+  private String getSender(HttpServletRequest request) {
+    return userService.getCurrentUser().getEmail();
   }
 
   // Gets comment from form input 
