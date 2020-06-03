@@ -138,16 +138,13 @@ function renderCommentForm() {
     const commentForm = document.getElementById('comment-form');
     const logLink = document.getElementById('login-logout-link');
 
-    const isLoggedIn = status.status;
-    const url = status.url;
-
-    if (isLoggedIn) {
+    if (status.isLoggedIn) {
       commentForm.style.display = 'block';
       logLink.innerText = 'logout here';
     } else {
       commentForm.style.display = 'none';
       logLink.innerText = 'login here';
     }
-    logLink.href = url;
+    logLink.href = status.url;
   });
 }

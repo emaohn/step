@@ -30,12 +30,12 @@ public class LoginStatusServlet extends HttpServlet {
 
   private String convertToJSON(boolean status) {
     Gson gson = new Gson();
-    LoginStatus loginStats;
+    LoginStatus loginStatus;
     if (status) {
-      loginStats = new LoginStatus(status, userService.createLogoutURL("/index.jsp"));
+      loginStatus = new LoginStatus(status, userService.createLogoutURL("/index.jsp"));
     } else {
-      loginStats = new LoginStatus(status, userService.createLoginURL("/index.jsp"));
+      loginStatus = new LoginStatus(status, userService.createLoginURL("/index.jsp"));
     }
-    return gson.toJson(loginStats);
+    return gson.toJson(loginStatus);
   }
 }

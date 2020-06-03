@@ -1,16 +1,16 @@
 package com.google.sps.data;
 
 public class LoginStatus {
-  private boolean status;
+  private boolean isLoggedIn;
   private String url;
 
   public LoginStatus(boolean status, String url) {
-    this.status = status;
+    this.isLoggedIn = status;
     this.url = url;
   }
 
-  public boolean getStatus() {
-    return this.status;
+  public boolean getIsLogged() {
+    return this.isLoggedIn;
   }
 
   public String getUrl() {
