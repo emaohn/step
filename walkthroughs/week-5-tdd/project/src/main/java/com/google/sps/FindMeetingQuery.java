@@ -14,10 +14,60 @@
 
 package com.google.sps;
 
-import java.util.Collection;
+import java.util.*; 
 
 public final class FindMeetingQuery {
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
-    throw new UnsupportedOperationException("TODO: Implement this method.");
+    ArrayList<TimeRange> timeranges = new ArrayList<TimeRange>();
+    // if meeting duration is longer than a day, it is not possible to hold meeting
+    if (request.getDuration() > TimeRange.WHOLE_DAY.duration()) {
+        return timeranges;
+    }
+    // initialize time range with whole day
+    timeranges.add(TimeRange.WHOLE_DAY);
+    Collection<String> meetingAttendants = request.getAttendees();
+    for(Event e: events) {
+      Set<String> eventAttendants = e.getAttendees();
+      for(String attendee: meetingAttendants) {
+        // if one of the attendees of this event is one of the people we're scheduling this meeting for, then find any time conflicts and remove them
+        if (eventAttendants.contains(attendee)) {
+          for (int i = 0; i < timeranges.size();) {
+            TimeRange curRange = timeranges.get(i);
+            TimeRange eventRange = e.getWhen();
+
+            if (curRange.overlaps(eventRange)) {
+                // if event timerange completely covers this timerange, then remove the timerange completely
+                if (eventRange.contains(curRange)) {
+                    timeranges.remove(i);
+                } else if (curRange.contains(eventRange)) {
+                    int numNewRanges = 0;
+                    if (eventRange.start() - curRange.start() >= request.getDuration()) {
+                        timeranges.add(i + (++numNewRanges), TimeRange.fromStartEnd(curRange.start(), eventRange.start(), false));
+                    }
+                    if (curRange.end() - eventRange.end() >= request.getDuration()) {
+                        timeranges.add(i + (++numNewRanges), TimeRange.fromStartEnd(eventRange.end(), curRange.end(), false));
+                    }
+                    timeranges.remove(i);
+                    i += numNewRanges;
+                } else {
+                    int start = curRange.start() < eventRange.start() ? curRange.start() : eventRange.end();
+                    int end = curRange.end() < eventRange.end() ? eventRange.start() - 1 : curRange.end();
+                    if (end - start >= request.getDuration()) {
+                        timeranges.add(i + 1, TimeRange.fromStartEnd(start, end, false));
+                        timeranges.remove(i);
+                        i++;
+                    } else {
+                        timeranges.remove(i);
+                    }
+                }
+            } else {
+                i++;
+            }
+          }
+          break;
+        }
+      }
+    }
+    return timeranges;
   }
 }
