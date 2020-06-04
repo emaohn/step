@@ -18,26 +18,80 @@ import java.util.*;
 
 public final class FindMeetingQuery {
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
-    ArrayList<TimeRange> timeranges = new ArrayList<TimeRange>();
+    ArrayList<TimeRange> mandatoryTimeRanges = new ArrayList<TimeRange>();
+    ArrayList<TimeRange> optionalTimeRanges = new ArrayList<TimeRange>();
     // if meeting duration is longer than a day, it is not possible to hold meeting
     if (request.getDuration() > TimeRange.WHOLE_DAY.duration()) {
-        return timeranges;
+        return mandatoryTimeRanges;
     }
     // initialize time range with whole day
-    timeranges.add(TimeRange.WHOLE_DAY);
-    Collection<String> meetingAttendants = request.getAttendees();
+    mandatoryTimeRanges.add(TimeRange.WHOLE_DAY);
+    optionalTimeRanges.add(TimeRange.WHOLE_DAY);
+    Collection<String> MandatoryAttendants = request.getAttendees();
+    Collection<String> optionalAttendants = request.getOptionalAttendees();
     for(Event e: events) {
+      boolean checkMandatoryAttendee = MandatoryAttendants.size() == 0 ? false : true;
+      boolean checkOptionalAttendee = optionalAttendants.size() == 0 ? false : true;
       for(String attendee: e.getAttendees()) {
         // if one of the attendees of this event is one of the people we're scheduling this meeting for, then find any time conflicts and remove them
-        if (meetingAttendants.contains(attendee)) {
-            modifyTimeRanges(timeranges, e, request);
+        if (checkMandatoryAttendee && MandatoryAttendants.contains(attendee)) {
+            modifyTimeRanges(mandatoryTimeRanges, e, request);
+            checkMandatoryAttendee = false;
+        }
+        if (checkOptionalAttendee && optionalAttendants.contains(attendee)) {
+            modifyTimeRanges(optionalTimeRanges, e, request);
+            checkOptionalAttendee = false;
+        }
+        // if we know that this event has at least one mandatory and optional attendee, there is not reason to check for more
+        if (!checkOptionalAttendee && !checkMandatoryAttendee) {
+            break;
         }
       }
     }
-    // See if my optional attendees can make any of these time slots
 
-    return timeranges;
+    // See if there are any valid overlaps between the mandatory time ranges and optional time ranges
+    ArrayList<TimeRange> overlapTimeRanges = new ArrayList<TimeRange>();
+    int mandatoryIndex = 0;
+    int optionalIndex = 0;
+    while (mandatoryIndex < mandatoryTimeRanges.size() && optionalIndex < optionalTimeRanges.size()) {
+        TimeRange curMandatoryRange = mandatoryTimeRanges.get(mandatoryIndex);
+        TimeRange curOptionalRange = optionalTimeRanges.get(optionalIndex);
+        // if they overlap, need to see if any common timerange can be used
+        TimeRange overlap = getOverlap(curMandatoryRange, curOptionalRange);
+        if (overlap != null && overlap.duration() >= request.getDuration()) {
+            overlapTimeRanges.add(overlap);
+        } 
+        if (curOptionalRange.end() <= curMandatoryRange.end()) {
+            optionalIndex++;
+        }
+        if (curMandatoryRange.end() <= curOptionalRange.end()) {
+            mandatoryIndex++;
+        }
+    }
+    if (MandatoryAttendants.size() != 0 && overlapTimeRanges.size() == 0) {
+        return mandatoryTimeRanges;
+    }    
+    return overlapTimeRanges;
   }
+
+    private TimeRange getOverlap(TimeRange mandatoryRange, TimeRange optionalRange) {
+        if (!mandatoryRange.overlaps(optionalRange)) { 
+            return null;
+        }
+        // if the optional range contains the mandatory range, then the entirety of the mandatory range is shared by all
+        if (optionalRange.contains(mandatoryRange)) {
+            return mandatoryRange;
+        }
+        // if the mandatory range contains the optional range, the entirety of optional range is shared by all
+        if (mandatoryRange.contains(optionalRange)) {
+            return optionalRange;
+        }
+        if (mandatoryRange.start() < optionalRange.start()) {
+            return TimeRange.fromStartEnd(optionalRange.start(), mandatoryRange.end(), true);
+        } else {
+            return TimeRange.fromStartEnd(mandatoryRange.start(), optionalRange.end(), true);
+        }
+    }
 
     private void modifyTimeRanges(ArrayList<TimeRange> timeranges, Event e, MeetingRequest request) {
         for (int i = 0; i < timeranges.size();) {
