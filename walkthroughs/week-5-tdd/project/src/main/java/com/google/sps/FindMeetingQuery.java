@@ -38,11 +38,11 @@ public final class FindMeetingQuery {
             handleEventConflict(mandatoryTimeRanges, e, request);
             checkMandatoryAttendee = false;
         }
-        // 
         if (optionalAttendants.contains(attendee)) {
             numOptionalUnavailable++;
         }
       }
+      //if all optional attendees are attending this event, then mark this time slot as unavailable for any optional attendees
       if (optionalAttendants.size() != 0 && numOptionalUnavailable == optionalAttendants.size()) {
           handleEventConflict(optionalTimeRanges, e, request);
       }
