@@ -30,13 +30,13 @@ public final class FindMeetingQuery {
     Collection<String> MandatoryAttendants = request.getAttendees();
     Collection<String> optionalAttendants = request.getOptionalAttendees();
     for(Event e: events) {
-      boolean checkMandatoryAttendee = MandatoryAttendants.size() == 0 ? false : true;
+      boolean hasMandatoryAttendee = false;
       int numOptionalUnavailable = 0;
       for(String attendee: e.getAttendees()) {
         // if one of the attendees of this event is one of the people we're scheduling this meeting for, then find any time conflicts and remove them
-        if (checkMandatoryAttendee && MandatoryAttendants.contains(attendee)) {
+        if (hasMandatoryAttendee && MandatoryAttendants.contains(attendee)) {
             handleEventConflict(mandatoryTimeRanges, e, request);
-            checkMandatoryAttendee = false;
+            hasMandatoryAttendee = true;
         }
         if (optionalAttendants.contains(attendee)) {
             numOptionalUnavailable++;
