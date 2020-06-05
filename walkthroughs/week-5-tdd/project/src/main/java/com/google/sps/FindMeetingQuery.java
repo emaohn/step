@@ -106,7 +106,7 @@ public final class FindMeetingQuery {
                     if (eventRange.start() - curRange.start() >= request.getDuration()) {
                         timeranges.add(i + (++numNewRanges), TimeRange.fromStartEnd(curRange.start(), eventRange.start(), false));                    }
                     if (curRange.end() - eventRange.end() >= request.getDuration()) {
-                    timeranges.add(i + (++numNewRanges), TimeRange.fromStartEnd(eventRange.end(), curRange.end(), false));
+                        timeranges.add(i + (++numNewRanges), TimeRange.fromStartEnd(eventRange.end(), curRange.end(), false));
                     }
                     timeranges.remove(i);
                     i += numNewRanges;
