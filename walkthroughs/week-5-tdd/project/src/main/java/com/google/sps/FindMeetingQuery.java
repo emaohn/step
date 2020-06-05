@@ -29,10 +29,10 @@ public final class FindMeetingQuery {
     optionalTimeRanges.add(TimeRange.WHOLE_DAY);
     Collection<String> MandatoryAttendants = request.getAttendees();
     Collection<String> optionalAttendants = request.getOptionalAttendees();
-    for(Event e: existingEvents) {
+    for (Event e : existingEvents) {
       boolean hasMandatoryAttendee = false;
       int numOptionalUnavailable = 0;
-      for(String attendee: e.getAttendees()) {
+      for (String attendee : e.getAttendees()) {
         // if one of the attendees of this event is one of the people we're scheduling this meeting for, then find any time conflicts and remove them
         if (!hasMandatoryAttendee && MandatoryAttendants.contains(attendee)) {
             handleEventConflict(mandatoryTimeRanges, e, request);
@@ -105,13 +105,15 @@ public final class FindMeetingQuery {
                     int numNewRanges = 0;
                     // searches for valid timeranges before event and after the event and adds them in order into the timeranges list
                     if (eventRange.start() - curRange.start() >= request.getDuration()) {
-                        timeranges.add(i + (++numNewRanges), TimeRange.fromStartEnd(curRange.start(), eventRange.start(), false));                    }
+                        numNewRanges++;
+                        timeranges.add(i + numNewRanges, TimeRange.fromStartEnd(curRange.start(), eventRange.start(), false));                    }
                     if (curRange.end() - eventRange.end() >= request.getDuration()) {
-                        timeranges.add(i + (++numNewRanges), TimeRange.fromStartEnd(eventRange.end(), curRange.end(), false));
+                        numNewRanges++;
+                        timeranges.add(i + numNewRanges, TimeRange.fromStartEnd(eventRange.end(), curRange.end(), false));
                     }
                     timeranges.remove(i);
                     i += numNewRanges;
-                // case 3: slight slight overlap: either event starts before timerange or starts during and continues past timerange
+                // case 3: slight overlap: either event starts before timerange or starts during and continues past timerange
                 } else {
                     int start = curRange.start() < eventRange.start() ? curRange.start() : eventRange.end();
                     int end = curRange.end() < eventRange.end() ? eventRange.start() - 1 : curRange.end();
