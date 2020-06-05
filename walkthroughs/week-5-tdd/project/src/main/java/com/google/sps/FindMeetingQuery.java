@@ -103,6 +103,7 @@ public final class FindMeetingQuery {
                 // case 2: event timerange is within current timerange
                 } else if (curRange.contains(eventRange)) {
                     int numNewRanges = 0;
+                    // searches for valid timeranges before event and after the event and adds them in order into the timeranges list
                     if (eventRange.start() - curRange.start() >= request.getDuration()) {
                         timeranges.add(i + (++numNewRanges), TimeRange.fromStartEnd(curRange.start(), eventRange.start(), false));                    }
                     if (curRange.end() - eventRange.end() >= request.getDuration()) {
