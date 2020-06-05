@@ -31,21 +31,20 @@ public final class FindMeetingQuery {
     Collection<String> optionalAttendants = request.getOptionalAttendees();
     for(Event e: events) {
       boolean checkMandatoryAttendee = MandatoryAttendants.size() == 0 ? false : true;
-      boolean checkOptionalAttendee = optionalAttendants.size() == 0 ? false : true;
+      int numOptionalUnavailable = 0;
       for(String attendee: e.getAttendees()) {
         // if one of the attendees of this event is one of the people we're scheduling this meeting for, then find any time conflicts and remove them
         if (checkMandatoryAttendee && MandatoryAttendants.contains(attendee)) {
-            modifyTimeRanges(mandatoryTimeRanges, e, request);
+            handleEventConflict(mandatoryTimeRanges, e, request);
             checkMandatoryAttendee = false;
         }
-        if (checkOptionalAttendee && optionalAttendants.contains(attendee)) {
-            modifyTimeRanges(optionalTimeRanges, e, request);
-            checkOptionalAttendee = false;
+        // 
+        if (optionalAttendants.contains(attendee)) {
+            numOptionalUnavailable++;
         }
-        // if we know that this event has at least one mandatory and optional attendee, there is not reason to check for more
-        if (!checkOptionalAttendee && !checkMandatoryAttendee) {
-            break;
-        }
+      }
+      if (optionalAttendants.size() != 0 && numOptionalUnavailable == optionalAttendants.size()) {
+          handleEventConflict(optionalTimeRanges, e, request);
       }
     }
 
@@ -93,7 +92,7 @@ public final class FindMeetingQuery {
         }
     }
 
-    private void modifyTimeRanges(ArrayList<TimeRange> timeranges, Event e, MeetingRequest request) {
+    private void handleEventConflict(ArrayList<TimeRange> timeranges, Event e, MeetingRequest request) {
         for (int i = 0; i < timeranges.size();) {
             TimeRange curRange = timeranges.get(i);
             TimeRange eventRange = e.getWhen();
@@ -123,9 +122,6 @@ public final class FindMeetingQuery {
                         timeranges.remove(i);
                     }
                 }
-            // if timerange is after event, don't need to look at this or the rest since they're in order
-            } else if (curRange.start() > eventRange.end()) {
-                break;
             } else {
                 //if no overlap then timerange is safe, keep untouched
                 i++;

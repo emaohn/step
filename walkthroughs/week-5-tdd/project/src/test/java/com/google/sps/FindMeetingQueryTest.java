@@ -342,9 +342,9 @@ public final class FindMeetingQueryTest {
   public void onlyOptionalAttendees() {
     Collection<Event> events = Arrays.asList(
         new Event("Event 1", TimeRange.fromStartDuration(TIME_0800AM, DURATION_30_MINUTES),
-            Arrays.asList(PERSON_A)),
+            Arrays.asList(PERSON_A, PERSON_B)),
         new Event("Event 2", TimeRange.fromStartDuration(TIME_0930AM, DURATION_30_MINUTES),
-            Arrays.asList(PERSON_B)));
+            Arrays.asList(PERSON_A, PERSON_B)));
 
     MeetingRequest request = new MeetingRequest(Arrays.asList(), DURATION_30_MINUTES);
 
@@ -363,10 +363,10 @@ public final class FindMeetingQueryTest {
   @Test 
   public void notEnoughRoomOptionalAttendees() {
     Collection<Event> events = Arrays.asList(
-        new Event("Event 1", TimeRange.fromStartEnd(TimeRange.START_OF_DAY, TIME_1000AM, false),
-            Arrays.asList(PERSON_A)),
-        new Event("Event 2", TimeRange.fromStartEnd(TIME_1000AM, TimeRange.END_OF_DAY, false),
-            Arrays.asList(PERSON_B)));
+        new Event("Event 1", TimeRange.WHOLE_DAY,
+            Arrays.asList(PERSON_A, PERSON_B)),
+        new Event("Event 2", TimeRange.WHOLE_DAY,
+            Arrays.asList(PERSON_B, PERSON_B)));
     
     MeetingRequest request = new MeetingRequest(Arrays.asList(), DURATION_30_MINUTES);
 
