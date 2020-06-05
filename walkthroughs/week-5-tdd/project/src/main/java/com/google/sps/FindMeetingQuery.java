@@ -17,7 +17,7 @@ package com.google.sps;
 import java.util.*; 
 
 public final class FindMeetingQuery {
-  public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
+  public Collection<TimeRange> query(Collection<Event> existingEvents, MeetingRequest request) {
     ArrayList<TimeRange> mandatoryTimeRanges = new ArrayList<TimeRange>();
     ArrayList<TimeRange> optionalTimeRanges = new ArrayList<TimeRange>();
     // if meeting duration is longer than a day, it is not possible to hold meeting
@@ -29,12 +29,12 @@ public final class FindMeetingQuery {
     optionalTimeRanges.add(TimeRange.WHOLE_DAY);
     Collection<String> MandatoryAttendants = request.getAttendees();
     Collection<String> optionalAttendants = request.getOptionalAttendees();
-    for(Event e: events) {
+    for(Event e: existingEvents) {
       boolean hasMandatoryAttendee = false;
       int numOptionalUnavailable = 0;
       for(String attendee: e.getAttendees()) {
         // if one of the attendees of this event is one of the people we're scheduling this meeting for, then find any time conflicts and remove them
-        if (hasMandatoryAttendee && MandatoryAttendants.contains(attendee)) {
+        if (!hasMandatoryAttendee && MandatoryAttendants.contains(attendee)) {
             handleEventConflict(mandatoryTimeRanges, e, request);
             hasMandatoryAttendee = true;
         }
