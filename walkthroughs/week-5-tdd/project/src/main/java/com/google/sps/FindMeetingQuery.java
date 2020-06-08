@@ -35,7 +35,7 @@ public final class FindMeetingQuery {
       for (String attendee : e.getAttendees()) {
         // if one of the attendees of this event is one of the people we're scheduling this meeting for, then find any time conflicts and remove them
         if (!hasMandatoryAttendee && MandatoryAttendants.contains(attendee)) {
-            handleEventConflict(mandatoryTimeRanges, e, request);
+            mandatoryTimeRanges = handleEventConflict(mandatoryTimeRanges, e, request);
             hasMandatoryAttendee = true;
         }
         if (optionalAttendants.contains(attendee)) {
@@ -44,7 +44,7 @@ public final class FindMeetingQuery {
       }
       //if all optional attendees are attending this event, then mark this time slot as unavailable for any optional attendees
       if (optionalAttendants.size() != 0 && numOptionalUnavailable == optionalAttendants.size()) {
-          handleEventConflict(optionalTimeRanges, e, request);
+        optionalTimeRanges = handleEventConflict(optionalTimeRanges, e, request);
       }
     }
 
@@ -92,43 +92,39 @@ public final class FindMeetingQuery {
         }
     }
 
-    private void handleEventConflict(ArrayList<TimeRange> timeranges, Event e, MeetingRequest request) {
-        for (int i = 0; i < timeranges.size();) {
+    private ArrayList<TimeRange> handleEventConflict(ArrayList<TimeRange> timeranges, Event e, MeetingRequest request) {
+        ArrayList<TimeRange> result = new ArrayList<TimeRange>();
+        for (int i = 0; i < timeranges.size(); i++) {
             TimeRange curRange = timeranges.get(i);
             TimeRange eventRange = e.getWhen();
             if (curRange.overlaps(eventRange)) {
                 // case 1: current timerange is within event timerange => no part of timerange works so remove
                 if (eventRange.contains(curRange)) {
-                    timeranges.remove(i);
+                    continue;
                 // case 2: event timerange is within current timerange
                 } else if (curRange.contains(eventRange)) {
                     int numNewRanges = 0;
                     // searches for valid timeranges before event and after the event and adds them in order into the timeranges list
                     if (eventRange.start() - curRange.start() >= request.getDuration()) {
-                        numNewRanges++;
-                        timeranges.add(i + numNewRanges, TimeRange.fromStartEnd(curRange.start(), eventRange.start(), false));                    }
-                    if (curRange.end() - eventRange.end() >= request.getDuration()) {
-                        numNewRanges++;
-                        timeranges.add(i + numNewRanges, TimeRange.fromStartEnd(eventRange.end(), curRange.end(), false));
+                        result.add(TimeRange.fromStartEnd(curRange.start(), eventRange.start(), false));
+                    } if (curRange.end() - eventRange.end() >= request.getDuration()) {
+                        result.add(TimeRange.fromStartEnd(eventRange.end(), curRange.end(), false));
                     }
-                    timeranges.remove(i);
-                    i += numNewRanges;
                 // case 3: slight overlap: either event starts before timerange or starts during and continues past timerange
                 } else {
                     int start = curRange.start() < eventRange.start() ? curRange.start() : eventRange.end();
                     int end = curRange.end() < eventRange.end() ? eventRange.start() - 1 : curRange.end();
                     if (end - start >= request.getDuration()) {
-                        timeranges.add(i + 1, TimeRange.fromStartEnd(start, end, false));
-                        timeranges.remove(i);
-                        i++;
+                        result.add(TimeRange.fromStartEnd(start, end, false));
                     } else {
-                        timeranges.remove(i);
+                        //timeranges.remove(i);
                     }
                 }
             } else {
                 //if no overlap then timerange is safe, keep untouched
-                i++;
+                result.add(curRange);
             }
         }
+        return result;
     }
 }
