@@ -116,8 +116,6 @@ public final class FindMeetingQuery {
                     int end = curRange.end() < eventRange.end() ? eventRange.start() - 1 : curRange.end();
                     if (end - start >= request.getDuration()) {
                         result.add(TimeRange.fromStartEnd(start, end, false));
-                    } else {
-                        //timeranges.remove(i);
                     }
                 }
             } else {
