@@ -14,10 +14,116 @@
 
 package com.google.sps;
 
-import java.util.Collection;
+import java.util.*; 
 
 public final class FindMeetingQuery {
-  public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
-    throw new UnsupportedOperationException("TODO: Implement this method.");
+  public Collection<TimeRange> query(Collection<Event> existingEvents, MeetingRequest request) {
+    ArrayList<TimeRange> mandatoryTimeRanges = new ArrayList<TimeRange>();
+    ArrayList<TimeRange> optionalTimeRanges = new ArrayList<TimeRange>();
+    // if meeting duration is longer than a day, it is not possible to hold meeting
+    if (request.getDuration() > TimeRange.WHOLE_DAY.duration()) {
+        return mandatoryTimeRanges;
+    }
+    // initialize time range with whole day
+    mandatoryTimeRanges.add(TimeRange.WHOLE_DAY);
+    optionalTimeRanges.add(TimeRange.WHOLE_DAY);
+    Collection<String> MandatoryAttendants = request.getAttendees();
+    Collection<String> optionalAttendants = request.getOptionalAttendees();
+    for (Event e : existingEvents) {
+      boolean hasMandatoryAttendee = false;
+      int numOptionalUnavailable = 0;
+      for (String attendee : e.getAttendees()) {
+        // if one of the attendees of this event is one of the people we're scheduling this meeting for, then find any time conflicts and remove them
+        if (!hasMandatoryAttendee && MandatoryAttendants.contains(attendee)) {
+            mandatoryTimeRanges = handleEventConflict(mandatoryTimeRanges, e, request);
+            hasMandatoryAttendee = true;
+        }
+        if (optionalAttendants.contains(attendee)) {
+            numOptionalUnavailable++;
+        }
+      }
+      //if all optional attendees are attending this event, then mark this time slot as unavailable for any optional attendees
+      if (optionalAttendants.size() != 0 && numOptionalUnavailable == optionalAttendants.size()) {
+        optionalTimeRanges = handleEventConflict(optionalTimeRanges, e, request);
+      }
+    }
+
+    // See if there are any valid overlaps between the mandatory time ranges and optional time ranges
+    // Note: Time ranges in both mandatory and optional array lists are sorted
+    ArrayList<TimeRange> overlapTimeRanges = new ArrayList<TimeRange>();
+    int mandatoryIndex = 0;
+    int optionalIndex = 0;
+    while (mandatoryIndex < mandatoryTimeRanges.size() && optionalIndex < optionalTimeRanges.size()) {
+        TimeRange curMandatoryRange = mandatoryTimeRanges.get(mandatoryIndex);
+        TimeRange curOptionalRange = optionalTimeRanges.get(optionalIndex);
+        // if they overlap, need to see if any common timerange can be used
+        TimeRange overlap = getOverlap(curMandatoryRange, curOptionalRange);
+        if (overlap != null && overlap.duration() >= request.getDuration()) {
+            overlapTimeRanges.add(overlap);
+        } 
+        if (curOptionalRange.end() <= curMandatoryRange.end()) {
+            optionalIndex++;
+        }
+        if (curMandatoryRange.end() <= curOptionalRange.end()) {
+            mandatoryIndex++;
+        }
+    }
+    if (MandatoryAttendants.size() != 0 && overlapTimeRanges.size() == 0) {
+        return mandatoryTimeRanges;
+    }    
+    return overlapTimeRanges;
   }
+
+    private TimeRange getOverlap(TimeRange mandatoryRange, TimeRange optionalRange) {
+        if (!mandatoryRange.overlaps(optionalRange)) { 
+            return null;
+        }
+        // if the optional range contains the mandatory range, then the entirety of the mandatory range is shared by all
+        if (optionalRange.contains(mandatoryRange)) {
+            return mandatoryRange;
+        }
+        // if the mandatory range contains the optional range, the entirety of optional range is shared by all
+        if (mandatoryRange.contains(optionalRange)) {
+            return optionalRange;
+        }
+        if (mandatoryRange.start() < optionalRange.start()) {
+            return TimeRange.fromStartEnd(optionalRange.start(), mandatoryRange.end(), true);
+        } else {
+            return TimeRange.fromStartEnd(mandatoryRange.start(), optionalRange.end(), true);
+        }
+    }
+
+    private ArrayList<TimeRange> handleEventConflict(ArrayList<TimeRange> timeranges, Event e, MeetingRequest request) {
+        ArrayList<TimeRange> result = new ArrayList<TimeRange>();
+        for (int i = 0; i < timeranges.size(); i++) {
+            TimeRange curRange = timeranges.get(i);
+            TimeRange eventRange = e.getWhen();
+            if (curRange.overlaps(eventRange)) {
+                // case 1: current timerange is within event timerange => no part of timerange works so remove
+                if (eventRange.contains(curRange)) {
+                    continue;
+                // case 2: event timerange is within current timerange
+                } else if (curRange.contains(eventRange)) {
+                    int numNewRanges = 0;
+                    // searches for valid timeranges before event and after the event and adds them in order into the timeranges list
+                    if (eventRange.start() - curRange.start() >= request.getDuration()) {
+                        result.add(TimeRange.fromStartEnd(curRange.start(), eventRange.start(), false));
+                    } if (curRange.end() - eventRange.end() >= request.getDuration()) {
+                        result.add(TimeRange.fromStartEnd(eventRange.end(), curRange.end(), false));
+                    }
+                // case 3: slight overlap: either event starts before timerange or starts during and continues past timerange
+                } else {
+                    int start = curRange.start() < eventRange.start() ? curRange.start() : eventRange.end();
+                    int end = curRange.end() < eventRange.end() ? eventRange.start() - 1 : curRange.end();
+                    if (end - start >= request.getDuration()) {
+                        result.add(TimeRange.fromStartEnd(start, end, false));
+                    }
+                }
+            } else {
+                //if no overlap then timerange is safe, keep untouched
+                result.add(curRange);
+            }
+        }
+        return result;
+    }
 }
