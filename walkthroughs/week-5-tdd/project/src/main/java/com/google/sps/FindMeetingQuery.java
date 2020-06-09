@@ -49,6 +49,7 @@ public final class FindMeetingQuery {
     }
 
     // See if there are any valid overlaps between the mandatory time ranges and optional time ranges
+    // Note: Time ranges in both mandatory and optional array lists are sorted
     ArrayList<TimeRange> overlapTimeRanges = new ArrayList<TimeRange>();
     int mandatoryIndex = 0;
     int optionalIndex = 0;
